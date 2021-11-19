@@ -29,7 +29,7 @@ def process_tasks(task_queue, results_queue, scraping_func: Callable, max_attemp
         except:
             if session is not None:
                 session.close()
-            session = new_session()
+            session = None
             task.result = None
 
         task.num_attempts += 1
