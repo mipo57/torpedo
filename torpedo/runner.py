@@ -80,10 +80,7 @@ def run(scraping_func: Callable, urls: List[str], num_workers: int = 1, max_atte
 
     output = []
     while not results_queue.empty():
-        print("1")
         entry = results_queue.get()
         output.append(entry.result)
-
-    print("DUPA")
 
     return output
