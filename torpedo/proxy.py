@@ -18,7 +18,7 @@ class TorpedoProxy:
 
         port = get_free_port()
         container_name = f"torpedo_{uuid.uuid4().hex}"
-        p = subprocess.Popen(["/usr/bin/docker", "run", "--name", container_name, "--publish",
+        p = subprocess.Popen(["/usr/bin/docker", "run", '-rm', "--name", container_name, "--publish",
                               f"127.0.0.1:{port}:9050", "osminogin/tor-simple"], preexec_fn=set_pdeathsig(signal.SIGKILL))
 
         self.process = p

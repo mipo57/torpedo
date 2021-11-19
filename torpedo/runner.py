@@ -27,7 +27,8 @@ def process_tasks(task_queue, results_queue, scraping_func: Callable, max_attemp
             else:
                 task.result = None
         except:
-            session.close()
+            if session is not None:
+                session.close()
             session = new_session()
             task.result = None
 
@@ -38,7 +39,9 @@ def process_tasks(task_queue, results_queue, scraping_func: Callable, max_attemp
         else:
             results_queue.put(task)
 
-    session.close()
+    if session is not None:
+        session.close()
+
     return True
 
 def log_progress(num_tasks, task_queue):
