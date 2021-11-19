@@ -6,7 +6,7 @@ You need to have a docker installed on your system. Also, currently the package 
 
 ## Instalation
 ```bash
-pip3 install git+ssh://git@github.com/mipo57/torpedo.git
+pip3 install git+https://github.com/mipo57/torpedo.git
 ```
 
 ## Proxy Usage
