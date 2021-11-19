@@ -48,10 +48,6 @@ class ProxiedSession(requests.Session):
 
         return super().close()
 
-    def __del__(self):
-        self.torpedo_proxy.delete()
-        super().__del__()
-
     def __exit__(self, *args) -> None:
         self.torpedo_proxy.delete()
 
