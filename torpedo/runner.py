@@ -3,6 +3,7 @@ from multiprocessing import Process, Queue
 from dataclasses import dataclass
 from torpedo.proxy import new_session
 import tqdm
+import time
 
 @dataclass
 class Task:
@@ -48,6 +49,7 @@ def log_progress(num_tasks, task_queue):
 
         progress = num_tasks - left
         pbar.update(progress - pbar.n)
+        time.sleep(0.1)
 
     pbar.close()
 
