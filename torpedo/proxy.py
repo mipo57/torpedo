@@ -1,7 +1,7 @@
 import signal
 import subprocess
 import uuid
-from subprocess import Popen
+from subprocess import PIPE, Popen
 from typing import List
 import time
 
@@ -72,20 +72,16 @@ def new_session(pause: float = 0.2, timeout: float = 5.0, max_retries=5) -> Prox
         raise RuntimeError("Could not start a session")
 
 
-def _wait_for_startup(session: ProxiedSession, pause: float = 0.2, timeout: float = 5.0, max_retries=5) -> bool:
-    success = False
+def _wait_for_startup(proxy: TorpedoProxy, pause: float = 0.2, timeout: float = 5.0, max_retries=5) -> bool:
+    while True:
+        p = Popen(["docker", "inspect", "-f", "{{.State.Health.Status}}", proxy.container_name], stdout=PIPE)
+        p.wait()
 
-    for _ in range(max_retries):
-        if success:
+        status = p.stdout.readline()
+
+        if status == 'healthy':
             return True
+        elif status != 'starting':
+            return False
 
-        try:
-            time.sleep(pause)
-            res = session.get('http://google.com', timeout=timeout)
-
-            if res.status_code == 200:
-                return True
-        except:
-            success = False
-
-    return success
+        time.sleep(0.1)
