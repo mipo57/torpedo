@@ -1,3 +1,4 @@
+import os
 import signal
 import subprocess
 import uuid
@@ -18,8 +19,9 @@ class TorpedoProxy:
 
         port = get_free_port()
         container_name = f"torpedo_{uuid.uuid4().hex}"
-        p = subprocess.Popen(["/usr/bin/docker", "run", '--rm', "--name", container_name, "--publish",
+        p = subprocess.Popen(["/usr/bin/docker", "run", '-d', '--rm', "--name", container_name, "--publish",
                               f"127.0.0.1:{port}:9050", "osminogin/tor-simple"], preexec_fn=set_pdeathsig(signal.SIGKILL))
+        p.wait()
 
         self.process = p
         self.container_name = container_name
@@ -65,7 +67,7 @@ def new_session(pause: float = 0.2, timeout: float = 5.0, max_retries=5) -> Prox
 
     session.set_proxy(new_proxy)
 
-    if _wait_for_startup(session, pause, timeout, max_retries):
+    if _wait_for_startup(new_proxy, pause, timeout, max_retries):
         return session
     else:
         session.close()
@@ -73,15 +75,12 @@ def new_session(pause: float = 0.2, timeout: float = 5.0, max_retries=5) -> Prox
 
 
 def _wait_for_startup(proxy: TorpedoProxy, pause: float = 0.2, timeout: float = 5.0, max_retries=5) -> bool:
-    while True:
-        p = Popen(["docker", "inspect", "-f", "{{.State.Health.Status}}", proxy.container_name], stdout=PIPE)
-        p.wait()
 
-        status = p.stdout.readline()
+    timeout = time.time()  + timeout
+    while time.time() < timeout:
+        res = os.system(f"curl -s --socks5 127.0.0.1:{proxy.port} 'https://check.torproject.org/' | grep -qm1 Congratulations")
 
-        if status == 'healthy':
+        if res == 0:
             return True
-        elif status != 'starting':
-            return False
 
         time.sleep(0.1)
