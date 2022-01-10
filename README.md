@@ -42,7 +42,7 @@ sites = [
     "https://example.com/example4"
 ]
 
-torpedo.run((
+torpedo.run(
     scraping_func = scrape,
     urls = sites,
     num_workers = 15,
