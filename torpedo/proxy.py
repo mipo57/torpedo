@@ -29,7 +29,7 @@ class TorpedoProxy:
                 "9051",
                 "--publish",
                 f"127.0.0.1:{port_controller}:9051",
-                "tor-simple"
+                "mipo57/tor-simple"
             ]
         )
         p.wait(timeout=20)
