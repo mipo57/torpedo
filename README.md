@@ -27,6 +27,8 @@ Under the hood, for every session new docker container is started. This docker c
 
 
 ```python
+import torpedo
+
 def scrape(request_result):
     # Your custom scraping function
 
@@ -40,7 +42,7 @@ sites = [
     "https://example.com/example4"
 ]
 
-run_scraping(
+torpedo.run((
     scraping_func = scrape,
     urls = sites,
     num_workers = 15,
