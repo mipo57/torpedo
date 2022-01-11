@@ -17,7 +17,7 @@ class TorpedoProxy:
         container_name = f"torpedo_{uuid.uuid4().hex}"
         p = Popen(
             [
-                "/usr/bin/docker",
+                "docker",
                 "run",
                 "-d",
                 "--rm",
@@ -53,7 +53,7 @@ class TorpedoProxy:
         if not self.deleted:
             self.process.kill()
             Popen(
-                ["/usr/bin/docker", "kill", self.container_name]
+                ["docker", "kill", self.container_name]
             ).wait(timeout=20)
             self.deleted = True
 
@@ -83,7 +83,7 @@ def new_session(timeout: float = 10.0, max_retries=5
         new_proxy = TorpedoProxy()
 
         session = ProxiedSession()
-        session.proxies = {"http": new_proxy.address(), "https": new_proxy.address()}
+        session.proxies = {"http": new_proxy.address().strip(), "https": new_proxy.address().strip()}
 
         session.set_proxy(new_proxy)
 
