@@ -38,15 +38,13 @@ def process_tasks(
         if task.termination_task:
             break
 
-        if use_session:
-            if session is None:
-                session = new_session()
+        if session is None:
+            session = new_session()
 
-            if session is None:
-                print("Failed to start a session, restarting...")
-                task_queue.add(task)
-                continue
-
+        if session is None:
+            print("Failed to start a session, restarting...")
+            task_queue.add(task)
+            continue
 
         task.result = None
         task.num_attempts += 1
@@ -106,17 +104,6 @@ def process_tasks(
 
     print("TASK FNISHED")
 
-def log_progress(num_tasks, task_queue, results_queue):
-    pbar = tqdm.tqdm(total=num_tasks)
-
-    while results_queue.qsize() < num_tasks:
-        pbar.update(results_queue.qsize() - pbar.n)
-        time.sleep(0.1)
-
-    pbar.update(num_tasks - pbar.n)
-    pbar.close()
-
-    print("Logging FNISHED")
 
 def run(
     scraping_func: Callable,
@@ -137,9 +124,6 @@ def run(
 
     # For some reason logging with tqdm in main process is bugged
     processes = []
-    # p = Process(target=log_progress, args=(len(urls), task_queue, results_queue), daemon=True)
-    # processes.append(p)
-    # p.start()
 
     for _ in range(num_workers):
         p = Process(
